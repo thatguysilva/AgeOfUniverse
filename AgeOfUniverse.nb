@@ -1,0 +1,24 @@
+AgeOfUniverse[omegaM_, omegaR_, omegaLambda_, geometry_: False] := 
+  Module[{age, integralFunction, omegaK, geometryDescription},
+   (*Fixed value for the inverse of the Hubble constant, in gigayears*)
+
+   
+   hubbleTime = 14.39*10^9; (*14.39 Gyrs*)
+   (*Relation for densities*)
+   omegaK = 1 - omegaM - omegaR - omegaLambda;
+   (*Check geometry if requested*)
+   If[geometry, 
+    geometryDescription = 
+     Which[omegaK > 0, "Open Universe (OmegaK > 0)", omegaK < 0, 
+      "Closed Universe (OmegaK < 0)", True, 
+      "Flat Universe (OmegaK = 0)"];
+    Return[{omegaK, geometryDescription}]];
+   (*Define the integrand for the revised Friedmann equation*)
+   integralFunction[a_] := 
+    1/Sqrt[omegaM/a + omegaR/a^2 + omegaK + omegaLambda*a^2];
+   (*Integrate the Friedmann equation*)
+   age = hubbleTime*
+     NIntegrate[integralFunction[a], {a, 0, 1}, 
+      Method -> "GlobalAdaptive"];
+   (*Return the age of the universe in years*)
+   age];
